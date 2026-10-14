@@ -154,3 +154,21 @@ test('展示元数据：locale/{en,zh}.json 形状为 {meta:{title,description}}
     assert.ok(parsed.meta.title.trim() && parsed.meta.description.trim(), `locale/${lang}.json 的 meta 不能为空`)
   }
 })
+
+test('双语文档：README.md 是英文主文档，README.zh.md 是中文，两者互相链接', async () => {
+  const en = await readFile(new URL('../README.md', import.meta.url), 'utf8')
+  const zh = await readFile(new URL('../README.zh.md', import.meta.url), 'utf8')
+
+  for (const [name, text] of [['README.md', en], ['README.zh.md', zh]]) {
+    assert.match(text, /\[English\]\(README\.md\)/, `${name} 缺 English 链接`)
+    assert.match(text, /\[中文\]\(README\.zh\.md\)/, `${name} 缺 中文 链接`)
+  }
+
+  // 主 README 必须是英文：汉字只应出现在语言切换链接里。
+  const han = (en.match(/[\u4e00-\u9fff]/g) ?? []).length
+  assert.ok(han < 40, `README.md 应以英文为主，实际含 ${han} 个汉字（像是残留了中文正文）`)
+
+  // npm 只自动带上 README.md，中文版必须显式进 files，否则装到的包没有中文文档。
+  const manifest = JSON.parse(await readFile(packageUrl, 'utf8'))
+  assert.ok((manifest.files ?? []).includes('README.zh.md'), 'files 白名单必须包含 README.zh.md')
+})
