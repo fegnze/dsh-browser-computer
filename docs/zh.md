@@ -1,6 +1,6 @@
 # 浏览器与电脑操控（`myspace-dsh-browser-computer`）
 
-[English](README.md) | [中文](README.zh.md)
+[English](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/docs/zh.md)
 
 把「让 DSH 直接操作浏览器和电脑」做成**装一次就生效的插件**。插件本体就是
 `cordis.patch.yml` 里的两条 MCP 行 —— `playwright-mcp` 与 `peekaboo-mcp`。这是官方

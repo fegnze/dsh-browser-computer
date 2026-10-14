@@ -155,20 +155,29 @@ test('展示元数据：locale/{en,zh}.json 形状为 {meta:{title,description}}
   }
 })
 
-test('双语文档：README.md 是英文主文档，README.zh.md 是中文，两者互相链接', async () => {
-  const en = await readFile(new URL('../README.md', import.meta.url), 'utf8')
-  const zh = await readFile(new URL('../README.zh.md', import.meta.url), 'utf8')
+test('文档布局：根目录只能有一个 readme 文件，否则 npm 会挑错渲染的那份', async () => {
+  // 实测（2026-10-14）：根目录同时存在 README.md 与 README.zh.md 时，npm registry 把
+  // README.zh.md 当成包的 README —— readme 字段 6090 字符，正好等于中文那份的 6089 字符
+  // 加一个换行；英文那份是 12428 字符。所以这不是缓存延迟，是真的取错了。
+  // 而且 npm-packlist 会把任何 /readme* 文件强制打进 tarball，files 白名单挡不住，
+  // 因此中文文档必须用一个不带 readme 的文件名（现为 docs/zh.md）。
+  const root = await readdir(new URL('..', import.meta.url))
+  const readmes = root.filter((name) => /^readme/i.test(name))
+  assert.deepEqual(readmes, ['README.md'],
+    `根目录的 readme 类文件必须只有 README.md，实际：${readmes.join(', ')}`)
+})
 
-  for (const [name, text] of [['README.md', en], ['README.zh.md', zh]]) {
-    assert.match(text, /\[English\]\(README\.md\)/, `${name} 缺 English 链接`)
-    assert.match(text, /\[中文\]\(README\.zh\.md\)/, `${name} 缺 中文 链接`)
+test('双语文档：英文主文档 + docs/zh.md，用绝对链接互相指向', async () => {
+  const repo = 'https://github.com/fegnze/myspace-dsh-browser-computer/blob/main'
+  const en = await readFile(new URL('../README.md', import.meta.url), 'utf8')
+  const zh = await readFile(new URL('../docs/zh.md', import.meta.url), 'utf8')
+
+  for (const [name, text] of [['README.md', en], ['docs/zh.md', zh]]) {
+    assert.ok(text.includes(`[English](${repo}/README.md)`), `${name} 缺 English 绝对链接`)
+    assert.ok(text.includes(`[中文](${repo}/docs/zh.md)`), `${name} 缺 中文 绝对链接`)
   }
 
   // 主 README 必须是英文：汉字只应出现在语言切换链接里。
   const han = (en.match(/[\u4e00-\u9fff]/g) ?? []).length
   assert.ok(han < 40, `README.md 应以英文为主，实际含 ${han} 个汉字（像是残留了中文正文）`)
-
-  // npm 只自动带上 README.md，中文版必须显式进 files，否则装到的包没有中文文档。
-  const manifest = JSON.parse(await readFile(packageUrl, 'utf8'))
-  assert.ok((manifest.files ?? []).includes('README.zh.md'), 'files 白名单必须包含 README.zh.md')
 })

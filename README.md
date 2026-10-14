@@ -1,6 +1,6 @@
 # Browser & Computer Control (`myspace-dsh-browser-computer`)
 
-[English](README.md) | [中文](README.zh.md)
+[English](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/docs/zh.md)
 
 Turns "let DSH drive a browser and a computer" into a plugin that **works the moment it is
 installed**. The plugin body *is* the two MCP rows in `cordis.patch.yml` — `playwright-mcp`
