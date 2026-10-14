@@ -52,11 +52,14 @@ jobs:
         run: |
           name=$(node -p "require('./package.json').name")
           v=$(node -p "require('./package.json').version")
+          # 必须先 npm pack：npm publish 不会在本地留下 .tgz，
+          # 而下一步挂 GitHub Release 用的就是这个文件。
           if npm view "$name@$v" version >/dev/null 2>&1; then
-            echo "$name@$v 已经在 npm 上，直接取回 tarball"
+            echo "$name@$v 已经在 npm 上，取回 registry 里的 tarball"
             npm pack "$name@$v"
           else
-            npm publish --provenance
+            npm pack
+            npm publish "$name-$v.tgz" --provenance
           fi
 
       - name: 挂到 GitHub Release
