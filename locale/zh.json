@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "浏览器与电脑操控",
+    "description": "以插件形式把 playwright-mcp 与 peekaboo-mcp 接进 DeepSeek Harness，让它直接操作浏览器与电脑；附一键依赖安装、系统权限引导与连接自检。"
+  }
+}

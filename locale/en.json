@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Browser & Computer Control",
+    "description": "Give DeepSeek Harness direct browser and computer control by wiring the playwright-mcp and peekaboo-mcp servers, with one-click dependency setup, system permission guidance, and connection checks."
+  }
+}

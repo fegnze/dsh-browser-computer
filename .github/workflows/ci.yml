@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # 本插件零运行时依赖、零构建步骤，所以不需要 npm ci。
+      - run: npm test
+      # 顺带校验 package.json#files 白名单：漏掉 icon.png 或 cordis.patch.yml
+      # 会让装到的包少文件（图标退回默认、bundle 起不来）。
+      - run: npm pack --dry-run

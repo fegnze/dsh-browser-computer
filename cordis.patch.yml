@@ -1,0 +1,69 @@
+# 浏览器与电脑操控 —— 装上即生效的配置层。
+#
+# 本文件就是这个插件的本体：两条 MCP 行把 playwright-mcp / peekaboo-mcp 接进 DSH，
+# 让模型直接拿到操作浏览器与电脑的工具。src/ 里的东西只是「一键检查 / 装依赖 /
+# 引导权限 / 验证连接」的辅助能力；删掉那两条行，辅助工具就失去意义。
+#
+# 三条行：
+#   browser-computer   —— 插件本体（辅助工具 + 斜杠命令）
+#   playwright-mcp     —— 浏览器操控
+#   peekaboo-mcp       —— 电脑操控（macOS）
+#
+# 路径一律经 !!js 在加载时解析，不写死任何本机绝对路径；`!!js >-` 折叠块用来容纳
+# 含 ` : ` 的三元表达式（写成单行 plain scalar 会被 YAML 当成映射）。
+
+- insert:
+    - id: browser-computer
+      name: myspace-dsh-browser-computer
+      config:
+        probeTimeoutMs: 90000
+        # 插件激活时自动跑一遍「查环境 → 装缺的依赖 → 查授权 → 需要就打开授权面板」
+        autoRepairOnStart: true
+        # 体检/修复时是否允许打开「系统设置」对应面板（只打开面板，不改任何授权）
+        allowOpenSettings: true
+        packages:
+          playwright: '@playwright/mcp@latest'
+          peekaboo: '@steipete/peekaboo'
+
+    # npx 必须是绝对路径：Finder/Dock 启动的 App 只有最小 PATH，裸 npx 解析不到。
+    - id: playwright-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: playwright
+        transport: stdio
+        command: !!js >-
+          process.platform === 'win32'
+            ? process.execPath.replace(/[^\\]+$/, 'npx.cmd')
+            : process.execPath.replace(/[^/]+$/, 'npx')
+        args:
+          - '-y'
+          - '@playwright/mcp@latest'
+        # cwd 决定 Playwright 持久 profile 的 workspace-hash 与 file:// 根；
+        # DSH_HOME 一定存在，避免 cwd 不存在导致子进程直接起不来。
+        cwd: !!js >-
+          process.env.DSH_HOME || process.env.HOME || '/tmp'
+        failOnStartupError: false
+        toolCallTimeoutMs: 120000
+
+    # --no-remote 强制本机执行：避免绕到 Peekaboo Bridge/daemon（那是另一套授权，
+    # 而且会起一个常驻进程）。--allow-foreground 是「真正能点、能打字」的前提；
+    # 只需要后台无障碍操作时，删掉这一个参数即可降权。
+    - id: peekaboo-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: peekaboo
+        transport: stdio
+        command: !!js >-
+          process.platform === 'win32'
+            ? process.execPath.replace(/[^\\]+$/, 'npx.cmd')
+            : process.execPath.replace(/[^/]+$/, 'npx')
+        args:
+          - '-y'
+          - '@steipete/peekaboo'
+          - 'mcp'
+          - '--no-remote'
+          - '--allow-foreground'
+        cwd: !!js >-
+          process.env.DSH_HOME || process.env.HOME || '/tmp'
+        failOnStartupError: false
+        toolCallTimeoutMs: 120000
