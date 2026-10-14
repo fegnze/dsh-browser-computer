@@ -1,6 +1,6 @@
 {
   "name": "myspace-dsh-browser-computer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "让 DeepSeek Harness 直接操作浏览器与电脑：以插件形式装配 playwright-mcp 与 peekaboo-mcp，并提供一键依赖安装、系统权限引导与连接自检",
   "type": "module",
   "main": "./src/host.mjs",
@@ -46,6 +46,10 @@
   "engines": {
     "node": ">=22",
     "dsh": ">=0.2.0-rc.2 <0.3.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/dsh-app-boot": ">=0.2.0-rc.2 <0.3.0"
   },
   "files": [
     "cordis.patch.yml",

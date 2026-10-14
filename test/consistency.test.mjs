@@ -181,3 +181,20 @@ test('双语文档：英文主文档 + docs/zh.md，用绝对链接互相指向'
   const han = (en.match(/[\u4e00-\u9fff]/g) ?? []).length
   assert.ok(han < 40, `README.md 应以英文为主，实际含 ${han} 个汉字（像是残留了中文正文）`)
 })
+
+test('V2：必须声明 DSH peer，且范围与 engines.dsh 完全一致', async () => {
+  // dsh-plugin-scout 的核验规则 V2 看的是 peerDependencies 里有没有 @deepseek-ai/dsh*；
+  // 只写自定义的 engines.dsh 不算，官方安装器不会据此做任何版本约束。
+  const manifest = JSON.parse(await readFile(packageUrl, 'utf8'))
+  const peers = manifest.peerDependencies ?? {}
+
+  const dshPeers = Object.keys(peers).filter((name) => name.startsWith('@deepseek-ai/dsh'))
+  assert.ok(dshPeers.length > 0,
+    '未声明 @deepseek-ai/dsh* peer：官方安装器不会对 DSH 版本做任何约束')
+
+  // dsh-app-boot 是承载 DSH 版本范围的那个包（scout 用的是同一套）。
+  assert.equal(peers['@deepseek-ai/dsh-app-boot'], manifest.engines?.dsh,
+    'peer 范围必须与 engines.dsh 完全一致，否则两处版本声明会互相打架')
+
+  assert.ok(peers['@deepseek-ai/cordis'], '应声明 cordis（插件 API 所在的包）')
+})
