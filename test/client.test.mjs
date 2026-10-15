@@ -2,9 +2,10 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
-import { INTENT_HEADER } from '../src/http.mjs'
+import { HTTP_PREFIX, INTENT_HEADER } from '../src/http.mjs'
 
-const PKG = 'myspace-dsh-browser-computer'
+const PKG = 'dsh-browser-computer'
+const LEGACY_ID = 'myspace-dsh-browser-computer'
 
 /**
  * 不引入打包器，直接把 Client 半边当普通脚本在受控全局里跑一遍。
@@ -86,11 +87,11 @@ test('挂到插件详情页槽位（不是宿主设置页），样式与注册�
 
   assert.equal(styles.length, 1)
   assert.equal(styles[0].dataset.plugin, PKG)
-  assert.equal(styles[0].dataset.pluginCss, `${PKG}/style`)
+  assert.equal(styles[0].dataset.pluginCss, `${LEGACY_ID}/style`)
 
   const section = injections[0]
   assert.equal(section.entry.options.name, 'plugins.detail.section')
-  assert.equal(section.entry.options.id, `${PKG}/section`)
+  assert.equal(section.entry.options.id, `${LEGACY_ID}/section`)
   assert.equal(typeof section.entry.options.label, 'function')
   assert.equal(typeof section.entry.Component, 'function')
 })
@@ -129,11 +130,14 @@ test('Client 的接口路径与意图头跟 Host 路由一致', async () => {
 
 test('Host 还没重载（路由 404）时，错误里要直接给出「完整重启 App」的指引', async () => {
   // 真跑一遍 call() 的错误映射：模拟旧 Host 处理器返回的 404。
-  const fetchImpl = async () => ({
-    ok: false,
-    status: 404,
-    json: async () => ({ ok: false, error: { code: 'not-found', message: '未知接口 /api/repair' } }),
-  })
+  const fetchImpl = async (url) => {
+    assert.equal(url, `${HTTP_PREFIX}/api/status`)
+    return {
+      ok: false,
+      status: 404,
+      json: async () => ({ ok: false, error: { code: 'not-found', message: '未知接口 /api/repair' } }),
+    }
+  }
 
   const loaded = await loadClient({ fetchImpl })
   const { injections, sink } = mount(loaded)

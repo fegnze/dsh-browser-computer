@@ -9,12 +9,14 @@
  * 请求带自定义意图头，Host 侧再过 connection.admit。
  */
 window.__ModuleLoader__.load({
-  id: 'myspace-dsh-browser-computer',
+  id: 'dsh-browser-computer',
   factory(require) {
     const React = require('react')
     const h = React.createElement
 
-    const PKG = 'myspace-dsh-browser-computer'
+    const PKG = 'dsh-browser-computer'
+    // Keep existing HTTP, component and stylesheet identifiers stable across package renames.
+    const LEGACY_ID = 'myspace-dsh-browser-computer'
     const INTENT = { 'x-myspace-browser-computer': '1' }
     const PERMISSION_LABEL = { screenRecording: '屏幕录制', accessibility: '辅助功能', eventSynthesizing: '合成输入' }
     const MARK = { granted: '✓', denied: '✗', unknown: '?' }
@@ -53,7 +55,7 @@ window.__ModuleLoader__.load({
     ].join('')
 
     async function call(path, body) {
-      const response = await fetch(`/${PKG}${path}`, {
+      const response = await fetch(`/${LEGACY_ID}${path}`, {
         method: body === undefined ? 'GET' : 'POST',
         credentials: 'same-origin',
         headers: body === undefined ? INTENT : { ...INTENT, 'content-type': 'application/json' },
@@ -221,7 +223,7 @@ window.__ModuleLoader__.load({
       const tag = document.createElement('style')
       // dataset 必须在插入 DOM 之前写好，否则会被下一个物化的模块认领并在卸载时删掉。
       tag.dataset.plugin = PKG
-      tag.dataset.pluginCss = `${PKG}/style`
+      tag.dataset.pluginCss = `${LEGACY_ID}/style`
       tag.textContent = CSS
       document.head.appendChild(tag)
       return () => tag.remove()
@@ -234,7 +236,7 @@ window.__ModuleLoader__.load({
         // 挂在**插件自己的详情页**（官方为插件预留的扩展槽），不是宿主设置页。
         ctx.effect(
           () => ctx.slots.inject('plugins.detail.section', () => ctx.slots.register(
-            { name: 'plugins.detail.section', id: `${PKG}/section`, order: 40, label: () => '环境检查与授权' },
+            { name: 'plugins.detail.section', id: `${LEGACY_ID}/section`, order: 40, label: () => '环境检查与授权' },
             Section,
           )),
           'browser-computer: detail section',

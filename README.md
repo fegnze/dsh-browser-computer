@@ -1,6 +1,6 @@
-# Browser & Computer Control (`myspace-dsh-browser-computer`)
+# Browser & Computer Control (`dsh-browser-computer`)
 
-[English](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/docs/zh.md)
+[English](https://github.com/fegnze/dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/dsh-browser-computer/blob/main/docs/zh.md)
 
 Turns "let DSH drive a browser and a computer" into a plugin that **works the moment it is
 installed**. The plugin body *is* the two MCP rows in `cordis.patch.yml` — `playwright-mcp`
@@ -32,10 +32,10 @@ Pick any one of the three:
 
 ```bash
 # 1) from npm (recommended: pinned version, reproducible)
-dsh plugin --profile desktop add myspace-dsh-browser-computer
+dsh plugin --profile desktop add dsh-browser-computer
 
 # 2) straight from GitHub
-dsh plugin --profile desktop add github:fegnze/myspace-dsh-browser-computer
+dsh plugin --profile desktop add github:fegnze/dsh-browser-computer
 
 # 3) local development (points at this directory, edits are visible immediately)
 dsh plugin --profile desktop add link:<absolute path to this repo>
@@ -152,7 +152,7 @@ your call.
 ## Rollback
 
 ```bash
-dsh plugin --profile desktop remove myspace-dsh-browser-computer
+dsh plugin --profile desktop remove dsh-browser-computer
 ```
 
 Removing it retires both MCP rows. To keep the capability but drop the health-check tools,

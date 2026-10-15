@@ -47,7 +47,7 @@ test('cordis.patch.yml 声明了插件本体与 playwright-mcp / peekaboo-mcp �
 test('package.json 的 dsh.bundle.patch 指向真实存在的 patch', async () => {
   const manifest = JSON.parse(await readFile(packageUrl, 'utf8'))
   assert.equal(manifest.dsh?.bundle?.patch, './cordis.patch.yml')
-  assert.equal(manifest.name, 'myspace-dsh-browser-computer')
+  assert.equal(manifest.name, 'dsh-browser-computer')
   // 官方 mcp-bundle 模板：配置型 bundle 不需要 Host/Client 入口文件，也不认 dsh.files。
   assert.equal(manifest.dsh?.files, undefined, 'dsh.files 是死字段（官方解析器不读）')
   const patch = await readFile(patchUrl, 'utf8')
@@ -168,7 +168,7 @@ test('文档布局：根目录只能有一个 readme 文件，否则 npm 会挑�
 })
 
 test('双语文档：英文主文档 + docs/zh.md，用绝对链接互相指向', async () => {
-  const repo = 'https://github.com/fegnze/myspace-dsh-browser-computer/blob/main'
+  const repo = 'https://github.com/fegnze/dsh-browser-computer/blob/main'
   const en = await readFile(new URL('../README.md', import.meta.url), 'utf8')
   const zh = await readFile(new URL('../docs/zh.md', import.meta.url), 'utf8')
 

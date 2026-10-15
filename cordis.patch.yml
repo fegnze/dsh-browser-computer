@@ -14,7 +14,7 @@
 
 - insert:
     - id: browser-computer
-      name: myspace-dsh-browser-computer
+      name: dsh-browser-computer
       config:
         probeTimeoutMs: 90000
         # 插件激活时自动跑一遍「查环境 → 装缺的依赖 → 查授权 → 需要就打开授权面板」

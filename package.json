@@ -1,5 +1,5 @@
 {
-  "name": "myspace-dsh-browser-computer",
+  "name": "dsh-browser-computer",
   "version": "0.1.5",
   "description": "让 DeepSeek Harness 直接操作浏览器与电脑：以插件形式装配 playwright-mcp 与 peekaboo-mcp，并提供一键依赖安装、系统权限引导与连接自检",
   "type": "module",
@@ -19,11 +19,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fegnze/myspace-dsh-browser-computer.git"
+    "url": "git+https://github.com/fegnze/dsh-browser-computer.git"
   },
-  "homepage": "https://github.com/fegnze/myspace-dsh-browser-computer#readme",
+  "homepage": "https://github.com/fegnze/dsh-browser-computer#readme",
   "bugs": {
-    "url": "https://github.com/fegnze/myspace-dsh-browser-computer/issues"
+    "url": "https://github.com/fegnze/dsh-browser-computer/issues"
   },
   "exports": {
     ".": "./src/host.mjs",

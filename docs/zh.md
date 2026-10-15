@@ -1,6 +1,6 @@
-# 浏览器与电脑操控（`myspace-dsh-browser-computer`）
+# 浏览器与电脑操控（`dsh-browser-computer`）
 
-[English](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/myspace-dsh-browser-computer/blob/main/docs/zh.md)
+[English](https://github.com/fegnze/dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/dsh-browser-computer/blob/main/docs/zh.md)
 
 把「让 DSH 直接操作浏览器和电脑」做成**装一次就生效的插件**。插件本体就是
 `cordis.patch.yml` 里的两条 MCP 行 —— `playwright-mcp` 与 `peekaboo-mcp`。这是官方
@@ -27,10 +27,10 @@ Client 入口文件**，装上即把两个 MCP server 接进 DSH。
 
 ```bash
 # 1) 从 npm（推荐，版本确定、可复现）
-dsh plugin --profile desktop add myspace-dsh-browser-computer
+dsh plugin --profile desktop add dsh-browser-computer
 
 # 2) 直接从 GitHub
-dsh plugin --profile desktop add github:fegnze/myspace-dsh-browser-computer
+dsh plugin --profile desktop add github:fegnze/dsh-browser-computer
 
 # 3) 本地开发（指向本仓库目录，改动即时可见）
 dsh plugin --profile desktop add link:<本仓库绝对路径>
@@ -126,7 +126,7 @@ MCP 行，它和本插件声明的那条会撞成**两个 MCP 实例、工具重
 ## 回滚
 
 ```bash
-dsh plugin --profile desktop remove myspace-dsh-browser-computer
+dsh plugin --profile desktop remove dsh-browser-computer
 ```
 
 移除后两条 MCP 行随之失效。若想保留能力但去掉体检工具，只删 `browser-computer` 那条行即可。

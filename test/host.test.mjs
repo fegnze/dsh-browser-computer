@@ -63,7 +63,7 @@ function stubCtx({ available = ['commands', 'webServer'] } = {}) {
 const applyIdle = (ctx) => apply(ctx, { autoRepairOnStart: false })
 
 test('入口名与包名一致，且硬依赖只保留 tools / subprocess', () => {
-  assert.equal(name, 'myspace-dsh-browser-computer')
+  assert.equal(name, 'dsh-browser-computer')
   assert.deepEqual(declaredInject, ['tools', 'subprocess'])
 })
 

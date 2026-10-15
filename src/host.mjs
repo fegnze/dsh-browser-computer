@@ -15,7 +15,7 @@ import { createDoctor } from './doctor.mjs'
 import { createHandler, HTTP_PREFIX } from './http.mjs'
 import { registerCommand, registerTools } from './tools.mjs'
 
-export const name = 'myspace-dsh-browser-computer'
+export const name = 'dsh-browser-computer'
 export const inject = ['tools', 'subprocess']
 export { Config }
 
