@@ -1,12 +1,13 @@
 # Browser & Computer Control (`dsh-browser-computer`)
 
-[English](https://github.com/fegnze/dsh-browser-computer/blob/main/README.md) | [中文](https://github.com/fegnze/dsh-browser-computer/blob/main/docs/zh.md)
+[English](README.md) | [中文](README.zh.md)
 
-Turns "let DSH drive a browser and a computer" into a plugin that **works the moment it is
-installed**. The plugin body *is* the two MCP rows in `cordis.patch.yml` — `playwright-mcp`
-and `peekaboo-mcp`. That follows the official "configuration-only bundle" recipe
-(`templates/mcp` + `references/mcp-bundle.md`): **no Host or Client entry file is required** —
-installing it wires both MCP servers into DSH.
+Turns "let DSH drive a browser and a computer" into a plugin wired through a single installation.
+The MCP capabilities are declared by two rows in `cordis.patch.yml` — `playwright-mcp`
+and `peekaboo-mcp`. That part follows the official "configuration-only bundle" recipe
+(`templates/mcp` + `references/mcp-bundle.md`): MCP wiring alone requires no Host or Client
+entry file. This package additionally provides Host and Client entries for health checks,
+repair, and the status UI. See the activation steps below.
 
 Once activated it automatically runs "check environment → install missing dependencies →
 check permissions → open the permission panels that need attention", and the UI is just a
@@ -28,21 +29,22 @@ silently).
 
 ## Install and activation
 
-Pick any one of the three:
+Add any of these specs on DSH's official Plugins page. For profiles that allow CLI
+management, use the commands below. If the Electron App exclusively owns the desktop
+profile, use its plugin manager instead of trying to manage that profile from the CLI.
 
 ```bash
-# 1) from npm (recommended: pinned version, reproducible)
-dsh plugin --profile desktop add dsh-browser-computer
+# 1) from npm (recommended; specify @version for reproducible installs)
+dsh plugin --profile <profile> add dsh-browser-computer
 
 # 2) straight from GitHub
-dsh plugin --profile desktop add github:fegnze/dsh-browser-computer
+dsh plugin --profile <profile> add github:fegnze/dsh-browser-computer
 
-# 3) local development (points at this directory, edits are visible immediately)
-dsh plugin --profile desktop add link:<absolute path to this repo>
+# 3) local development (points at this directory; refresh/restart requirements still apply)
+dsh plugin --profile <profile> add link:<absolute path to this repo>
 ```
 
-**After installing you must fully quit and reopen the DSH App.** All of this is measured, not
-assumed:
+**After installing you must fully quit and reopen the DSH App.** Historical measurements:
 
 - The two MCP rows appear in the config layer immediately after install (`Config.listConfigs`
   shows `playwright-mcp` / `peekaboo-mcp`), but they are **not** materialised into
@@ -96,9 +98,12 @@ requests) and `connection.admit` (the Host/Origin fence plus browser authenticat
 does not `require` any Harness Client package; controls and styles are its own and reference
 only `--dsw-alias-*` theme tokens.
 
-A Client change has been measured to **not** need an App restart: editing `src/client.js`
-rebuilds the graph and the live page picks it up (the plugin's entry shows up in
-`plugins.detail.section`'s occupants immediately). Only Host changes need a full restart.
+In a previous development environment, a Client change did **not** need an App restart:
+editing `src/client.js` rebuilt the graph and the live page picked it up (the plugin's entry
+appeared in `plugins.detail.section`'s occupants). Refresh-free updates require an active
+`pnpm run dev:web` watcher in the same checkout. Without verifying that watcher, rebuild the
+affected Web artifacts and refresh the existing page; automatic updates are not promised.
+Host changes require a full restart.
 
 ## The two actions
 
@@ -151,8 +156,10 @@ your call.
 
 ## Rollback
 
+Remove the plugin on the official Plugins page, or for CLI-managed profiles:
+
 ```bash
-dsh plugin --profile desktop remove dsh-browser-computer
+dsh plugin --profile <profile> remove dsh-browser-computer
 ```
 
 Removing it retires both MCP rows. To keep the capability but drop the health-check tools,
