@@ -1,6 +1,6 @@
 # Browser & Computer Control (`dsh-browser-computer`)
 
-[English](README.md) | [中文](README.zh.md)
+[English](README.md) | [中文](docs/zh.md)
 
 Turns "let DSH drive a browser and a computer" into a plugin wired through a single installation.
 The MCP capabilities are declared by two rows in `cordis.patch.yml` — `playwright-mcp`

@@ -167,15 +167,17 @@ test('文档布局：根目录只能有一个 readme 文件，否则 npm 会挑�
     `根目录的 readme 类文件必须只有 README.md，实际：${readmes.join(', ')}`)
 })
 
-test('双语文档：英文主文档 + docs/zh.md，用绝对链接互相指向', async () => {
-  const repo = 'https://github.com/fegnze/dsh-browser-computer/blob/main'
+test('双语文档：英文主文档 + docs/zh.md，用相对链接互相指向', async () => {
   const en = await readFile(new URL('../README.md', import.meta.url), 'utf8')
   const zh = await readFile(new URL('../docs/zh.md', import.meta.url), 'utf8')
 
-  for (const [name, text] of [['README.md', en], ['docs/zh.md', zh]]) {
-    assert.ok(text.includes(`[English](${repo}/README.md)`), `${name} 缺 English 绝对链接`)
-    assert.ok(text.includes(`[中文](${repo}/docs/zh.md)`), `${name} 缺 中文 绝对链接`)
-  }
+  assert.ok(en.includes('[English](README.md)'), 'README.md 缺 English 相对链接')
+  assert.ok(en.includes('[中文](docs/zh.md)'), 'README.md 缺 中文相对链接')
+  assert.ok(zh.includes('[English](../README.md)'), 'docs/zh.md 缺 English 相对链接')
+  assert.ok(zh.includes('[中文](zh.md)'), 'docs/zh.md 缺 中文相对链接')
+  const manifest = JSON.parse(await readFile(packageUrl, 'utf8'))
+  assert.ok(manifest.files.includes('docs/zh.md'), 'files 必须发布中文文档')
+  assert.ok(!manifest.files.includes('README.zh.md'), 'files 不应保留旧中文文档路径')
 
   // 主 README 必须是英文：汉字只应出现在语言切换链接里。
   const han = (en.match(/[\u4e00-\u9fff]/g) ?? []).length

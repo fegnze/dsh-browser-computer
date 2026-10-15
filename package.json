@@ -57,7 +57,7 @@
     "icon.png",
     "locale",
     "README.md",
-    "README.zh.md"
+    "docs/zh.md"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs"
