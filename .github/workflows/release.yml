@@ -1,69 +1,24 @@
-name: release
+name: GitHub Release
 
-# 打 v<version> tag（且与 package.json 一致）即发布到 npm，并把同一个 tarball 挂到 GitHub Release。
-#
-# 认证用仓库 Secret `NPM_TOKEN`（npm 的 granular token，需勾选 Bypass 2FA；
-# npm 对这类 token 的定位就是 CI 发布）。
-#
-# 想升级成 Trusted Publishing（OIDC，GitHub 里不存任何密钥、provenance 自动附带）：
-#   1) 在 npm 网页后台该包的 Settings → Trusted Publisher 里绑定本仓库 + 本文件名
-#      （Bypass 2FA 的 token 不能执行 `npm trust`，那属于账号级变更，只能用网页 + OTP）
-#   2) 删掉下面 publish 步骤的 NODE_AUTH_TOKEN，以及 setup-node 的 registry-url
-# npm 已在弃用 bypass 2FA 的 token，届时按上面两条切换即可。
+# Tags create GitHub Releases only. npm publication is manual via publish.yml.
 on:
   push:
     tags: ['v*']
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        description: '只跑测试与打包干跑，不发布'
-        type: boolean
-        default: true
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
-
-      # 本插件零依赖、零构建，没有 lockfile，所以不需要 npm ci。
-      - run: npm test
-
-      - name: tag 必须等于 package.json 的 version
-        if: startsWith(github.ref, 'refs/tags/v')
+          node-version: '24'
+      - name: Tag matches package version
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
-
-      - name: 干跑（手工触发时）
-        if: github.event_name == 'workflow_dispatch'
-        run: npm pack --dry-run
-
-      - name: 发布（或复用已发布的 tarball）
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          name=$(node -p "require('./package.json').name")
-          v=$(node -p "require('./package.json').version")
-          # 必须先 npm pack：npm publish 不会在本地留下 .tgz，
-          # 而下一步挂 GitHub Release 用的就是这个文件。
-          if npm view "$name@$v" version >/dev/null 2>&1; then
-            echo "$name@$v 已经在 npm 上，取回 registry 里的 tarball"
-            npm pack "$name@$v"
-          else
-            npm pack
-            npm publish "$name-$v.tgz" --provenance
-          fi
-
-      - name: 挂到 GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: gh release create "$GITHUB_REF_NAME" ./*.tgz --title "$GITHUB_REF_NAME" --generate-notes
+      - name: Create GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
